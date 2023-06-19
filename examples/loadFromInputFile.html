@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Load from URL</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">ImageUtilsJS</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="row mt-5">
+                <div class="col">
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control" accept=".jpg,.png,.jpeg,.webp" id="file">
+                            <button class="btn btn-outline-secondary" id="loadByUrl" type="button" id="button-addon2">Load</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col" id="original-image"></div>
+                <div class="col">
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="number" step="1" class="form-control" id="width" placeholder="Image new Width">
+                            <button class="btn btn-outline-secondary" id="resizeImage" type="button" id="button-addon2">Resize</button>
+                        </div>
+                    </form>
+                    <button class="btn btn-outline-primary mb-3" id="buttonPallete" type="button">Get Pallete</button>
+                    <div id="resized-image"></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="../dist/imageUtils.min.js"></script>
+        <script>
+            var imageUtils = null;
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('loadByUrl').addEventListener('click', async ({target}) => {
+                    const originalText = target.innerText;
+                    target.innerText = 'Loading...';
+                    imageUtils = await IULoadFromInputFile(document.getElementById('file'));
+                    imageUtils.outputCanvas(document.getElementById('original-image'));
+                    target.innerText = originalText;
+                });
+
+                document.getElementById('resizeImage').addEventListener('click', async ({target}) => {
+                    if(imageUtils === null){
+                        alert('Load image first');
+                        return;
+                    }
+
+                    const originalText = target.innerText;
+                    target.innerText = 'Resizing...';
+                    const resize = imageUtils.resize();
+                    resize.resizeByWidth(document.getElementById('width').value).outputResizedCanvas(document.getElementById('resized-image'));
+                    target.innerText = originalText;
+
+                    document.getElementById('buttonPallete').addEventListener('click', async ({target}) => {
+                        const originalText = target.innerText;
+                        target.innerText = 'Getting Pallete...';
+                        const pallete = resize.getResizedColorPallete();
+                        console.log(pallete);
+                        target.innerText = originalText;
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
